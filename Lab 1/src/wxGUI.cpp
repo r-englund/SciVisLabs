@@ -9,6 +9,7 @@
 #include <vtkActor.h>
 #include <vtkConeSource.h>
 #include <vtkCamera.h>
+#include <vtkProperty.h>
 
 
 enum {
@@ -16,7 +17,10 @@ enum {
   Menu_About,
   Ctrl_Slider1,
   Ctrl_Slider2,
-  Ctrl_Slider3
+  Ctrl_Slider3,
+  Ctrl_Slider4,
+  Ctrl_Slider5,
+  Ctrl_Slider6
 };
 
 
@@ -30,6 +34,9 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
  EVT_COMMAND_SCROLL(Ctrl_Slider1, MyFrame::OnSlider1)
  EVT_COMMAND_SCROLL(Ctrl_Slider2, MyFrame::OnSlider2)
  EVT_COMMAND_SCROLL(Ctrl_Slider3, MyFrame::OnSlider3)
+ EVT_COMMAND_SCROLL(Ctrl_Slider4, MyFrame::OnSlider4)
+ EVT_COMMAND_SCROLL(Ctrl_Slider5, MyFrame::OnSlider5)
+ EVT_COMMAND_SCROLL(Ctrl_Slider6, MyFrame::OnSlider6)
  // Connect events from new widgets here
 END_EVENT_TABLE()
 
@@ -40,6 +47,7 @@ bool MyApp::OnInit() {
   MyFrame *frame = new MyFrame(_T("wxWindows-VTK App"),
                                wxPoint(50, 50), wxSize(450, 340));
   frame->Show(TRUE);
+  SetTopWindow(frame);
   return TRUE;
 }
 
@@ -84,14 +92,23 @@ MyFrame::MyFrame( const wxString& title,
   //m_pVTKWindow->DebugOn();
   m_sizer->Add( m_pVTKWindow, 0, wxEXPAND );
   
-  wxSlider *m_slider1 = new wxSlider( this,Ctrl_Slider1, 0, 0, 100 );
+  wxSlider *m_slider1 = new wxSlider( this,Ctrl_Slider1, 50, 0, 100 );
   m_sizer->Add( m_slider1, 0, wxEXPAND );
   
-  wxSlider *m_slider2 = new wxSlider( this,Ctrl_Slider2, 0, 0, 100 );
+  wxSlider *m_slider2 = new wxSlider( this,Ctrl_Slider2, 100, 0, 100 );
   m_sizer->Add( m_slider2, 0, wxEXPAND );
   
-  wxSlider *m_slider3 = new wxSlider( this,Ctrl_Slider3, 0, 0, 64 );
+  wxSlider *m_slider3 = new wxSlider( this,Ctrl_Slider3, 8, 0, 64 );
   m_sizer->Add( m_slider3, 0, wxEXPAND );
+
+  wxSlider *m_slider4 = new wxSlider( this,Ctrl_Slider4, 255, 0, 255 );
+  m_sizer->Add( m_slider4, 0, wxEXPAND );
+
+  wxSlider *m_slider5 = new wxSlider( this,Ctrl_Slider5, 255, 0, 255 );
+  m_sizer->Add( m_slider5, 0, wxEXPAND );
+
+  wxSlider *m_slider6 = new wxSlider( this,Ctrl_Slider6, 255, 0, 255 );
+  m_sizer->Add( m_slider6, 0, wxEXPAND );
   
   // Add or remove widgets here
   // Connect their events to the event table above
@@ -132,17 +149,18 @@ void MyFrame::ConstructVTK() {
   pConeSource->SetResolution(8);
   
   // connect pipeline
-  
   pConeMapper->SetInput(pConeSource->GetOutput());
   pConeActor->SetMapper(pConeMapper);
   pRenderer->AddActor(pConeActor);
-  
+ 
+
   // configure renderer
-  pRenderer->SetBackground(1.0,0.333333,0.5);
+  pRenderer->SetBackground(0,0,0);
   pRenderer->GetActiveCamera()->Elevation(30.0);
   pRenderer->GetActiveCamera()->Azimuth(30.0);
   pRenderer->GetActiveCamera()->Zoom(1.0);
   pRenderer->GetActiveCamera()->SetClippingRange(1,1000);
+
 }
 
 
@@ -189,4 +207,31 @@ void MyFrame::OnSlider3(wxScrollEvent& event){
   pConeSource->SetResolution( event.GetPosition() );
   m_pVTKWindow->Render();
   SetStatusText(_T("Updated cone resolution."));
+}
+
+void MyFrame::OnSlider4(wxScrollEvent& event){
+  double c[3];
+  pConeActor->GetProperty()->GetColor(c);
+  c[0] = event.GetPosition() / 255.0;
+  pConeActor->GetProperty()->SetColor(c); 
+  m_pVTKWindow->Render();
+  SetStatusText(_T("Updated red color."));
+}
+
+void MyFrame::OnSlider5(wxScrollEvent& event){
+  double c[3];
+  pConeActor->GetProperty()->GetColor(c);
+  c[1] = event.GetPosition() / 255.0;
+  pConeActor->GetProperty()->SetColor(c); 
+  m_pVTKWindow->Render();
+  SetStatusText(_T("Updated green color."));
+}
+
+void MyFrame::OnSlider6(wxScrollEvent& event){
+  double c[3];
+  pConeActor->GetProperty()->GetColor(c);
+  c[2] = event.GetPosition() / 255.0;
+  pConeActor->GetProperty()->SetColor(c); 
+  m_pVTKWindow->Render();
+  SetStatusText(_T("Updated blue color."));
 }

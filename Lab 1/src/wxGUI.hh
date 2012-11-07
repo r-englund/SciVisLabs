@@ -26,6 +26,9 @@ public:
   void OnSlider1(wxScrollEvent& event);
   void OnSlider2(wxScrollEvent& event);
   void OnSlider3(wxScrollEvent& event);
+  void OnSlider4(wxScrollEvent& event);
+  void OnSlider5(wxScrollEvent& event);
+  void OnSlider6(wxScrollEvent& event);
   
 protected:
   void ConstructVTK();
